@@ -899,7 +899,10 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     }
 
     private void execute(ActionCmd action) {
+        long s0 = System.currentTimeMillis();
         Objects.requireNonNull(action).apply(viewModel);
+        long s1 = System.currentTimeMillis();
+        System.err.println("EXECUTE took "+(s1-s0));
     }
 
     private void keyPressedListener(KeyEvent e) {
@@ -918,6 +921,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     }
 
     private void keyTypedListener(KeyEvent e) {
+        System.err.println("RTAS, typed "+e.getText());
         if (isCharOnly(e)) {
             if ("\t".equals(e.getCharacter())) {
                 ParagraphDecoration decoration = viewModel.getDecorationAtParagraph();

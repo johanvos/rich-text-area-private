@@ -72,6 +72,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.gluonhq.richtextarea.RichTextArea.RTA_DATA_FORMAT;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class RichTextAreaViewModel {
 
@@ -180,6 +182,7 @@ public class RichTextAreaViewModel {
     private final ReadOnlyIntegerWrapper undoStackSizeProperty = new ReadOnlyIntegerWrapper(this, "undoStackSize") {
         @Override
         protected void invalidated() {
+            LOGGER.info("undo stacksize has changed");
             if (isAutoSave()) {
                 save();
             } else {
@@ -191,7 +194,9 @@ public class RichTextAreaViewModel {
        return undoStackSizeProperty.getReadOnlyProperty();
     }
     public final int getUndoStackSize() {
-       return undoStackSizeProperty.get();
+       int answer = undoStackSizeProperty.get();
+       LOGGER.info("get undostacksize asked, return "+answer);
+       return answer;
     }
 
     // redoStackSizeProperty
@@ -753,8 +758,11 @@ public class RichTextAreaViewModel {
     }
 
     private void updateProperties() {
+        LOGGER.info("update props, part 1");
         undoStackSizeProperty.set(commandManager.getUndoStackSize());
+        LOGGER.info("update props, part 2");
         redoStackSizeProperty.set(commandManager.getRedoStackSize());
+        LOGGER.info("update props, part 3");
     }
 
     private Document getCurrentDocument(Selection selection) {
@@ -781,11 +789,27 @@ public class RichTextAreaViewModel {
             setDocument(document);
         });
     }
+    ExecutorService es = Executors.newFixedThreadPool(1);
+    long lastSavedTime = 0;
 
     void save() {
-        Document currentDocument = getCurrentDocument(Selection.UNDEFINED);
-        undoStackSizeWhenSaved = getUndoStackSize();
-        savedProperty.set(true);
-        setDocument(currentDocument);
+        System.err.println("lastsaved = " + lastSavedTime + " and now = " + System.currentTimeMillis());
+        if (System.currentTimeMillis() < lastSavedTime + 5000) {
+            savedProperty.set(true);
+            undoStackSizeWhenSaved = getUndoStackSize();
+            return;
+        }
+        es.execute(() -> {
+            try {
+                System.err.println("process");
+                lastSavedTime = System.currentTimeMillis();
+                Document currentDocument = getCurrentDocument(Selection.UNDEFINED);
+                undoStackSizeWhenSaved = getUndoStackSize();
+                savedProperty.set(true);
+                setDocument(currentDocument);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }

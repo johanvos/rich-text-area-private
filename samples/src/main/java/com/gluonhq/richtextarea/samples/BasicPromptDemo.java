@@ -90,6 +90,7 @@ public class BasicPromptDemo extends Application {
         editor.getActionFactory().open(emptyDocument).execute(new ActionEvent());
         editor.setPromptText("Type something!");
         editor.setPadding(new Insets(20));
+        editor.setAutoSave(true);
 
         BorderPane root = new BorderPane(editor);
         Scene scene = new Scene(root, 800, 600);

@@ -52,6 +52,7 @@ public class CommandManager<T> {
     }
 
     public void execute(AbstractCommand<T> cmd) {
+        LOGGER.info("and do");
         Objects.requireNonNull(cmd).execute(context);
         undoStack.push(cmd);
         redoStack.clear();
