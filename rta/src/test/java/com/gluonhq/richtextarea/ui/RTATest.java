@@ -306,6 +306,7 @@ public class RTATest {
         robot.push(new KeyCodeCombination(A, SHORTCUT_DOWN));
         waitForFxEvents();
         Selection selection = rta.getSelection();
+        System.err.println("selection = "+ selection);
         assertNotNull(selection);
         assertEquals(0, selection.getStart());
         assertEquals(70, selection.getEnd());

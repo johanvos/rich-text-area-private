@@ -15,7 +15,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
-        <javafx.version>23.0.1</javafx.version>
+        <!-- <javafx.version>23.0.1</javafx.version> -->
+        <javafx.version>24-internal+0-2024-11-13-125815</javafx.version>
         <gpg.plugin.version>3.2.7</gpg.plugin.version>
         <emoji.version>1.1.0</emoji.version>
     </properties>
@@ -45,10 +46,22 @@
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
-            <artifactId>testfx-junit5</artifactId>
-            <version>4.0.18</version>
+            <artifactId>testfx-core</artifactId>
+            <version>4.1.0-headless</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>4.1.0-headless</version>
+            <scope>test</scope>
+        </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>2.2</version>
+    </dependency>
+
     </dependencies>
 
     <developers>
@@ -150,7 +163,9 @@
                 <version>3.5.2</version>
                 <configuration>
                     <trimStackTrace>false</trimStackTrace>
-                    <argLine>--add-opens javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argLine>
+                    <argLine>-Dtestfx.headless=true
+                    --add-opens javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+                    --add-opens javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</argLine>
                     <systemProperties>
                         <property>
                             <name>java.util.logging.config.file</name>
