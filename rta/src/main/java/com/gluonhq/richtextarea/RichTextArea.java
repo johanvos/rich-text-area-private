@@ -57,6 +57,8 @@ import javafx.scene.input.DataFormat;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
  * The RichTextArea control is a text input component that allows a user to enter multiple lines of
@@ -87,6 +89,13 @@ public class RichTextArea extends Control {
 
     public RichTextArea() {
         getStyleClass().add(STYLE_CLASS);
+        selectionProperty.addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends Selection> ov, Selection t, Selection t1) {
+                System.err.println("sel changed from "+t+ " to + "+t1);
+                Thread.dumpStack();
+            }
+        });
     }
 
     // Properties

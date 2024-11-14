@@ -297,6 +297,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
             return ACTION_CMD_FACTORY.decorate(TextDecoration.builder().fromDecoration(decoration).fontPosture(fontPosture).build());
         }),
         entry(new KeyCodeCombination(TAB, SHIFT_ANY),                                        e -> {
+            Thread.dumpStack();
             ParagraphDecoration decoration = viewModel.getDecorationAtParagraph();
             Paragraph paragraph = viewModel.getParagraphWithCaret().orElse(null);
             if (decoration != null && decoration.getGraphicType() != ParagraphDecoration.GraphicType.NONE) {
@@ -903,12 +904,16 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     }
 
     private void keyPressedListener(KeyEvent e) {
+        System.err.println("[RTAS] keyPressedListener got keyevent "+e);
+//        Thread.dumpStack();
         // Find an applicable action and execute it if found
         for (KeyCombination kc : INPUT_MAP.keySet()) {
             if (kc.match(e)) {
+                System.err.println("Match: "+ kc);
                 ActionBuilder actionBuilder = INPUT_MAP.get(kc);
                 ActionCmd actionCmd = actionBuilder.apply(e);
                 if (actionCmd != null) {
+                    System.err.println("actionCmd = "+actionCmd);
                     execute(actionCmd);
                 }
                 e.consume();
@@ -918,6 +923,9 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     }
 
     private void keyTypedListener(KeyEvent e) {
+        System.err.println("TYPED "+e+" is charonly? "+isCharOnly(e));
+        System.err.println("Before we change, selection = "+viewModel.getSelection());
+//        Thread.dumpStack();
         if (isCharOnly(e)) {
             if ("\t".equals(e.getCharacter())) {
                 ParagraphDecoration decoration = viewModel.getDecorationAtParagraph();
@@ -936,6 +944,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
             }
             e.consume();
         }
+        System.err.println("selection = "+viewModel.getSelection());
     }
 
     private void populateContextMenu(boolean isEditable) {
@@ -998,6 +1007,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     }
 
     private void dndListener(DragEvent dragEvent) {
+        Thread.dumpStack();
         if (dragEvent.getEventType() == DragEvent.DRAG_ENTERED) {
             dragAndDropStart = 1;
         } else if (dragEvent.getEventType() == DragEvent.DRAG_DONE || dragEvent.getEventType() == DragEvent.DRAG_EXITED) {

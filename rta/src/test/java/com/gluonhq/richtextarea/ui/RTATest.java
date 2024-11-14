@@ -74,6 +74,8 @@ import java.util.stream.Collectors;
 
 import static com.gluonhq.emoji.EmojiData.getEmojiCollection;
 import static com.gluonhq.richtextarea.RichTextArea.RTA_DATA_FORMAT;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static javafx.scene.input.KeyCode.A;
 import static javafx.scene.input.KeyCode.END;
 import static javafx.scene.input.KeyCode.HOME;
@@ -116,31 +118,64 @@ public class RTATest {
     private static final Pattern markdownDetector = Pattern.compile(
             "(\\`)([^s]?.*?[^s]?|[^s]*)(\\`)|(\\_)([^s]?.*?[^s]?|[^s]*)(\\_)|(\\*)([^s]?.*?[^s]?|[^s]*)(\\*)",
             Pattern.DOTALL);
-
-    @BeforeEach
-    public void setup() {
-        if (!fxStarted) {
-            try {
-                Platform.startup(() -> fxStarted = true);
-            } catch (IllegalStateException e) {
-                // Platform already initialized
-                Platform.runLater(() -> fxStarted = true);
-            }
-        }
-    }
+//
+//    @BeforeEach
+//    public void setup() {
+//        System.err.println("[ANN] BEFOREEACH at "+Thread.currentThread());
+//        System.err.println("Prepare for setup at "+Thread.currentThread()+", fxs = "+fxStarted);
+//        if (!fxStarted) {
+//            try {
+//                Platform.startup(() -> fxStarted = true);
+//            } catch (IllegalStateException e) {
+//                System.err.println("ERRORRRRRRRRRRRRRRRRR");
+//                e.printStackTrace();
+//                // Platform already initialized
+//                Platform.runLater(() -> fxStarted = true);
+//            }
+//        }
+////        try {
+////            Thread t = new Thread() {
+////                @Override public void run() {
+////                    try {
+////                        System.err.println("PREPARE for next test on "+Thread.currentThread());
+////                        Thread.sleep(1000);
+////                        System.err.println("READY for next test on "+Thread.currentThread());
+////                        
+////                    } catch (InterruptedException ex) {
+////                        Logger.getLogger(RTATest.class.getName()).log(Level.SEVERE, null, ex);
+////                    }
+////                }
+////            };
+////            t.start();
+////        } catch (Throwable e) {
+////            e.printStackTrace();
+////        }
+//        System.err.println("Done setup at "+Thread.currentThread());
+//        
+//        System.err.println("[ANN] BEFOREEACHdone at "+Thread.currentThread());
+//
+//    }
 
     @Init
     public void init() {
+                System.err.println("[ANN] INIT at "+Thread.currentThread());
+
         richTextArea = new RichTextArea();
         root = new BorderPane(richTextArea);
+                        System.err.println("[ANN] INITdone at "+Thread.currentThread());
+
     }
 
     @Start
     public void start(Stage stage) {
+                        System.err.println("[ANN] START at "+Thread.currentThread());
+
         Scene scene = new Scene(root, 640, 480);
         stage.setScene(scene);
         stage.setTitle("RichTextArea");
         stage.show();
+                              System.err.println("[ANN] STARTdone at "+Thread.currentThread());
+  
     }
 
     @Test
@@ -173,6 +208,7 @@ public class RTATest {
 
     @Test
     public void emptyDocumentDemoTest(FxRobot robot) {
+        System.err.println("START EMPTYDOCTEST");
         run(() -> {
             String text = "Hello RTA";
             Document document = new Document(text);
@@ -271,6 +307,7 @@ public class RTATest {
 
     @Test
     public void actionsDemoTest(FxRobot robot) {
+        System.err.println("START ACTIONSDEMOTEST");
         run(() -> {
             String text = "Document is the basic model that contains all the information required";
             TextDecoration textDecoration = TextDecoration.builder().presets()
@@ -303,10 +340,13 @@ public class RTATest {
         waitForFxEvents();
         RichTextArea rta = robot.lookup(".rich-text-area").query();
 
+        Selection selection = rta.getSelection();
+        System.err.println("selection0 = "+ selection);
+        
         robot.push(new KeyCodeCombination(A, SHORTCUT_DOWN));
         waitForFxEvents();
-        Selection selection = rta.getSelection();
-        System.err.println("selection = "+ selection);
+        selection = rta.getSelection();
+        System.err.println("selection1 = "+ selection);
         assertNotNull(selection);
         assertEquals(0, selection.getStart());
         assertEquals(70, selection.getEnd());
@@ -565,7 +605,7 @@ public class RTATest {
         assertEquals(4, rta.getCaretPosition());
         robot.push(new KeyCodeCombination(RIGHT, SHIFT_DOWN, Tools.MAC ? ALT_DOWN : CONTROL_DOWN));
         assertEquals(7, rta.getCaretPosition());
-
+        System.err.println("CLIPBOARD = ");
         run(() -> richTextArea.getActionFactory().copy().execute(new ActionEvent()));
         waitForFxEvents();
         run(() -> assertTrue(Clipboard.getSystemClipboard().hasContent(RTA_DATA_FORMAT)));

@@ -449,8 +449,11 @@ public class RichTextAreaViewModel {
     }
 
     void clipboardCopy(final boolean cutText) {
+        System.err.println("[RTAVM] clipboardcopy");
         Selection selection = getSelection();
+        System.err.println("[RTAVM] sel = "+selection);
         if (selection.isDefined()) {
+            System.err.println("[RTAVM] sel is defined");
             Document currentDocument = getCurrentDocument(selection);
             final ClipboardContent content = new ClipboardContent();
             String text = currentDocument.getText();
@@ -463,6 +466,7 @@ public class RichTextAreaViewModel {
             if (cutText) {
                 commandManager.execute(new RemoveTextCmd(0));
             }
+            System.err.println("[RTAVM] set content to "+content);
             Clipboard.getSystemClipboard().setContent(content);
         }
     }
@@ -520,6 +524,7 @@ public class RichTextAreaViewModel {
     }
 
     void moveCaret(Direction direction, boolean changeSelection, boolean wordSelection, boolean lineSelection, boolean paragraphSelection) {
+        System.err.println("[RTAVM] moveCaret, dir = "+direction);
         Selection prevSelection = getSelection();
         int prevCaretPosition = getCaretPosition();
         switch (direction) {
@@ -572,7 +577,7 @@ public class RichTextAreaViewModel {
                 }
                 break;
         }
-
+        System.err.println("[RTAVM] changesel? "+changeSelection);
         if (changeSelection) {
             int pos = prevSelection.isDefined()?
                     prevCaretPosition == prevSelection.getStart()? prevSelection.getEnd(): prevSelection.getStart():

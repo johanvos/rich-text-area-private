@@ -43,6 +43,7 @@ public class ActionCmdCaretMove implements ActionCmd {
         this.changeSelection = changeSelection;
         this.wordSelection = wordSelection;
         this.lineSelection = lineSelection;
+        Thread.dumpStack();
     }
 
     public ActionCmdCaretMove(RichTextAreaViewModel.Direction direction, KeyEvent event) {
